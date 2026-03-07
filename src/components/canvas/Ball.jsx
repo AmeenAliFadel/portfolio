@@ -19,7 +19,6 @@ const BallMesh = ({ posBase = [0, 0, 0], texture, scale = 1, decalScale = 1.0 })
   const damping = 0.96;
   const minVel = 0.0001;
 
-  // Ensure decal/mesh faces camera initially
   useEffect(() => {
     if (meshRef.current) {
       meshRef.current.lookAt(camera.position);
@@ -127,7 +126,6 @@ const BallMesh = ({ posBase = [0, 0, 0], texture, scale = 1, decalScale = 1.0 })
         onPointerOut={(e) => draggingRef.current && onPointerUp(e)}
       >
         <mesh ref={meshRef} castShadow receiveShadow>
-          {/* geometry radius = 1, so scale === desired world radius */}
           <icosahedronGeometry args={[1, 1]} />
           <meshStandardMaterial
             color="#fff8eb"
@@ -137,7 +135,7 @@ const BallMesh = ({ posBase = [0, 0, 0], texture, scale = 1, decalScale = 1.0 })
           />
           {texture && (
             <Decal
-              position={[0, 0, 1.01]}    // خروج خفيف لتجنّب z-fighting
+              position={[0, 0, 1.01]}   
               rotation={[0, 0, 0]}
               map={texture}
               scale={[decalScale, decalScale, decalScale]}
@@ -154,23 +152,18 @@ const BallsScene = ({ technologies, containerWidth, containerHeight, itemPx, gap
   const urls = useMemo(() => technologies.map((t) => t.icon), [technologies]);
   const textures = useTexture(urls);
 
-  // compute grid geometry in pixels
   const cols = Math.max(1, Math.floor(containerWidth / (itemPx + gapPx)));
   const rows = Math.max(1, Math.ceil(technologies.length / cols));
 
-  // world units per pixel (camera/viewport dependent)
   const worldPerPixelX = viewport.width / Math.max(1, containerWidth);
   const worldPerPixelY = viewport.height / Math.max(1, containerHeight);
 
-  // compute pixel span
   const spanPxX = (cols - 1) * (itemPx + gapPx) + itemPx;
   const spanPxY = (rows - 1) * (itemPx + gapPx) + itemPx;
 
-  // convert to world units
   const spanWorldX = spanPxX * worldPerPixelX;
   const spanWorldY = spanPxY * worldPerPixelY;
 
-  // compute offsets (center grid at 0,0)
   const offsetXpx = ((cols - 1) * (itemPx + gapPx)) / 2;
   const offsetYpx = ((rows - 1) * (itemPx + gapPx)) / 2;
 
@@ -185,30 +178,25 @@ const BallsScene = ({ technologies, containerWidth, containerHeight, itemPx, gap
     });
   }, [technologies, cols, containerWidth, containerHeight, itemPx, gapPx, offsetXpx, offsetYpx, worldPerPixelX, worldPerPixelY]);
 
-  // set sphere scale in world units from itemPx: geometry radius is 1, so scale should equal desired radius
-  // we want sphere diameter ~ itemPx in px -> radius = itemPx/2
+
   const sphereRadiusWorld = (itemPx / 2) * worldPerPixelX * ballScale;
 
 
   const decalScaleLocal = 1.4;
 
-  // compute required camera z to fit both width and height
   useEffect(() => {
     if (!camera) return;
     const fovRad = (camera.fov * Math.PI) / 180;
     const halfFov = fovRad / 2;
     const aspect = viewport.width / viewport.height;
 
-    // vertical distance requirement
     const requiredZForY = (spanWorldY / 2 + 0.1) / Math.tan(halfFov);
 
-    // horizontal half fov
     const halfFovH = Math.atan(Math.tan(halfFov) * aspect);
     const requiredZForX = (spanWorldX / 2 + 0.1) / Math.tan(halfFovH);
 
-    const requiredZ = Math.max(requiredZForX, requiredZForY, 6); // minimum distance fallback
-    // set camera.z smoothly (instant is fine)
-    camera.position.z = requiredZ + 0.5; // small buffer
+    const requiredZ = Math.max(requiredZForX, requiredZForY, 6); 
+    camera.position.z = requiredZ + 0.5; 
     camera.lookAt(0, 0, 0);
     invalidate();
   }, [spanWorldX, spanWorldY, viewport.width, viewport.height, camera, invalidate]);

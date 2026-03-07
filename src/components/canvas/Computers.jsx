@@ -4,9 +4,7 @@ import { OrbitControls, Preload, useGLTF, useProgress } from '@react-three/drei'
 import sceneUrl from '../../assets/desktop_pc/scene.glb?url'
 
 const Computers = ({ isMobile }) => {
-  // Load the model from public/desktop_pc/scene.gltf
   const computer = useGLTF(sceneUrl)
-  // Return the model as a primitive inside a mesh group.
   return (
     <group>
       <hemisphereLight intensity={0.15} groundColor="black" />
@@ -29,14 +27,12 @@ const Computers = ({ isMobile }) => {
   );
 };
 
-// LoaderWatcher runs inside the Canvas and listens to Drei's loading manager.
-// When active becomes false (no more loading), it calls onLoaded(false) to notify parent.
+
 const LoaderWatcher = ({ onLoaded }) => {
   const { active } = useProgress();
 
   useEffect(() => {
     if (!active) {
-      // loading finished
       onLoaded(false);
     }
   }, [active, onLoaded]);
@@ -64,10 +60,8 @@ const ComputersCanvas = ({ onLoaded = () => { } }) => {
       frameloop="demand"
       shadows
       camera={{ position: [20, 3, 5], fov: 25 }}
-      // fixed spelling: preserveDrawingBuffer
       gl={{ preserveDrawingBuffer: true }}
     >
-      {/* Suspense fallback is null to avoid rendering HTML nodes inside the Canvas */}
       <Suspense fallback={null}>
         <OrbitControls enableZoom={false} maxPolarAngle={Math.PI / 2} minPolarAngle={Math.PI / 2} />
         <Computers isMobile={isMobile} />
