@@ -23,7 +23,7 @@ import php from "./tech/php.png";
 import sql from "./tech/sql.png";
 import firebase from "./tech/firebase.png";
 
-import focalX from "./company/focalX.jpg";
+import focalX from "./focalX.jpg";
 
 import EstateinRealEstate from './EstateinRealEstate.jpg'
 import dashboard from './dashboard.jpg'
